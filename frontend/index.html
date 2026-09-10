@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="获客系统 v1.0 前端 — 抖音获客 → 私信 → 企微 → 成交，全生命周期业务工作台">
+<title>获客系统 · 业务工作台 v1.0</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ══════════ SVG 图标库（统一描边风 · 全站调用） ══════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-leads" viewBox="0 0 24 24"><path d="M5 4h12l3 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 12h8M8 16h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-dm" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v11a1 1 0 01-1 1H8l-4 4V6a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-script" viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 011 1v15a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="18" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="9.5" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 19c.6-3 3-5 6-5s5.4 2 6 5M14 19c.4-2 1.8-3.5 4-3.5s3.4 1.2 4 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-funnel" viewBox="0 0 24 24"><path d="M4 5h16l-6 8v6l-4-2v-4L4 5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15 9l-2 5-5 2 2-5 5-2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-health" viewBox="0 0 24 24"><path d="M3 12h3l2-5 4 10 2-5h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M14 4c4 0 7 3 7 7l-9 9-4-4 9-9c0-1-1-2-3-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor"/><path d="M7 17l-3 3M5 14l-2 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2H4.5L6 16zM10 21a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v5M12 17.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5zM16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 9v6M19 9v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l3 6 6 .8-4.5 4.2 1.2 6.4L12 17l-5.7 3.4 1.2-6.4L3 9.8 9 9l3-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-empty" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 3"/><path d="M9 10h6M9 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-9M14 6h7v7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<!-- 安全模式红色横幅（IMP-004） -->
+<div id="safe-mode-banner" class="safe-banner" hidden role="alert" aria-live="polite">
+  <span class="safe-banner__dot" aria-hidden="true"></span>
+  <div class="safe-banner__text">
+    <strong>安全模式已启用 — 全部新触达已暂停</strong>
+    <span id="safe-banner-reason"></span>
+  </div>
+  <button type="button" class="btn btn--ghost-light btn--sm" id="btn-exit-safe-mode">人工确认退出</button>
+</div>
+
+<div class="shell">
+
+  <!-- ══════════ 顶部栏 ══════════ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <rect x="1.5" y="1.5" width="23" height="23" rx="6" fill="var(--ink)" />
+          <path d="M8 17V9l5 5 5-5v8" stroke="var(--paper)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-text__name">获客系统</span>
+        <span class="brand-text__sub">抖音获客 → 私信 → 企微 → 成交</span>
+      </div>
+    </div>
+
+    <div class="topbar__status" id="topbar-status">
+      <span class="status-pill status-pill--running" id="pill-task">
+        <span class="status-pill__led" aria-hidden="true"></span>采集运行中
+      </span>
+      <span class="status-pill status-pill--muted" id="pill-safe">安全模式：关</span>
+    </div>
+
+    <div class="topbar__actions">
+      <div class="bell-wrap" id="bell-wrap">
+        <button type="button" class="bell-btn" id="btn-notifications" aria-haspopup="true" aria-expanded="false" title="通知中心">
+          <span class="ico ico--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bell"/></svg></span>
+          <span class="bell-badge" id="bell-badge" hidden>0</span>
+        </button>
+        <div class="bell-panel" id="bell-panel" hidden></div>
+      </div>
+      <button type="button" class="btn btn--danger-outline" id="btn-pause-all">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1.5" width="3.4" height="11" rx="1" fill="currentColor"/><rect x="8.6" y="1.5" width="3.4" height="11" rx="1" fill="currentColor"/></svg>
+        一键暂停
+      </button>
+      <button type="button" class="btn btn--primary btn--sm" id="btn-settings" aria-haspopup="dialog">
+        <span class="ico ico--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></span>配置
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════ 左导航（业务分组） ══════════ -->
+  <nav class="sidenav" aria-label="主导航">
+
+    <ul class="sidenav__list">
+      <li><a href="#/workbench" data-nav="workbench" aria-current="page">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-home"/></svg></span>工作台
+      </a></li>
+    </ul>
+
+    <div class="nav-group">获客</div>
+    <ul class="sidenav__list">
+      <li><a href="#/leads" data-nav="leads">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-leads"/></svg></span>线索池<span class="nav-badge nav-badge--count" id="nav-leads-badge">20</span>
+      </a></li>
+      <li><a href="#/dm" data-nav="dm">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-dm"/></svg></span>私信任务<span class="nav-badge" id="nav-dm-badge" hidden>!</span>
+      </a></li>
+      <li><a href="#/dm-inbox" data-nav="dm-inbox">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-bell"/></svg></span>私信收件箱
+      </a></li>
+      <li><a href="#/comments" data-nav="comments">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-dm"/></svg></span>评论回复
+      </a></li>
+      <li><a href="#/scripts" data-nav="scripts">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-script"/></svg></span>话术库
+      </a></li>
+      <li><a href="#/accounts" data-nav="accounts">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-phone"/></svg></span>抖音账号<span class="nav-badge nav-badge--count" id="nav-acc-badge" hidden>!</span>
+      </a></li>
+      <li><a href="#/crawl" data-nav="crawl">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-rocket"/></svg></span>采集配置
+      </a></li>
+    </ul>
+
+    <div class="nav-group">客户管理</div>
+    <ul class="sidenav__list">
+      <li><a href="#/customers" data-nav="customers">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-people"/></svg></span>客户与商机<span class="nav-badge nav-badge--count" id="nav-cust-badge">9</span>
+      </a></li>
+      <li><a href="#/followups" data-nav="followups">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-calendar"/></svg></span>今日跟进<span class="nav-badge nav-badge--count" id="nav-fu-badge">7</span>
+      </a></li>
+    </ul>
+
+    <div class="nav-group">经营分析</div>
+    <ul class="sidenav__list">
+      <li><a href="#/funnel" data-nav="funnel">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-funnel"/></svg></span>转化漏斗
+      </a></li>
+      <li><a href="#/reports" data-nav="reports">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-trend"/></svg></span>数据报表
+      </a></li>
+      <li><a href="#/attribution" data-nav="attribution">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-compass"/></svg></span>触点归因
+      </a></li>
+      <li><a href="#/health" data-nav="health">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-health"/></svg></span>账号健康度
+      </a></li>
+      <li><a href="#/risk" data-nav="risk">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-shield"/></svg></span>合规风险
+      </a></li>
+      <li><a href="#/monitor" data-nav="monitor">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-health"></use></svg></span>系统监控
+      </a></li>
+    </ul>
+
+    <div class="nav-group">通知</div>
+    <ul class="sidenav__list">
+      <li><a href="#/notifications" data-nav="notifications">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-bell"/></svg></span>通知中心<span class="nav-badge nav-badge--count" id="nav-notif-badge" hidden>0</span>
+      </a></li>
+    </ul>
+
+    <div class="nav-group">设置</div>
+    <ul class="sidenav__list">
+      <li><a href="#/wizard" data-nav="wizard">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-rocket"/></svg></span>上手向导
+      </a></li>
+        <li><a href="#/settings" data-nav="settings"><span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-gear"/></svg></span>系统设置</a></li>
+      <li><a href="#/backup" data-nav="backup"><span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-clock"/></svg></span>数据备份</a></li>
+    </ul>
+
+    <div class="sidenav__footer">
+      <div class="north-star" title="北极星指标：合规前提下的加企微/私域承接数">
+        <span class="north-star__label">北极星 · 加企微</span>
+        <span class="north-star__value" id="north-star-value">41</span>
+        <span class="north-star__delta" id="north-star-delta">▲ 6 本周</span>
+      </div>
+      <p class="sidenav__version">v1.0-S3 · 内测版<br>自托管 · 数据不出域</p>
+    </div>
+  </nav>
+
+  <!-- ══════════ 主内容区 ══════════ -->
+  <main class="main" id="main" tabindex="-1">
+    <!-- 路由视图由 app.js 渲染 -->
+  </main>
+</div>
+
+<!-- 线索/客户 详情抽屉 -->
+<div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+<aside class="drawer" id="lead-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <!-- app.js 渲染 -->
+</aside>
+
+<!-- 通用弹窗（配置 / 安全模式退出 / 成交录入等） -->
+<div class="modal-backdrop" id="modal-backdrop" hidden></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <!-- app.js 渲染 -->
+</div>
+
+<!-- 轻提示 -->
+<div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/api-business.js"></script>
+<script src="assets/js/api-dashboard.js"></script>
+<script src="assets/js/api-dm-inbox.js"></script>
+<script src="assets/js/api-crawl.js"></script>
+<script src="assets/js/api-reports.js"></script>
+<script src="assets/js/api-scheduler.js"></script>
+<script src="assets/js/api-settings.js"></script>
+<script src="assets/js/api-backup.js"></script>
+<script src="assets/js/api-monitor.js"></script>
+<script src="assets/js/api-dm-sender.js"></script>
+<script src="assets/js/api-notifications.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

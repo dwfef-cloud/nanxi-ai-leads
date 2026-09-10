@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / Editor
+.agents/
+.claude/
+.codex/
+.playwright-cli/
+.runtime/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data / Runtime
+data/
+*.db
+*.sqlite
+*.sqlite3
+.runtime/
+logs/
+*.log
+
+# Node / Electron
+node_modules/
+desktop/node_modules/
+desktop/build/
+desktop/dist/
+.npm-cache/
+.desktop-node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp
+*.tmp
+*.temp
+*.bak
+*.old
