@@ -39,10 +39,15 @@ class LeadUpdate(BaseModel):
     score: int | None = None
     intent_level: Literal["A", "B", "C", "D"] | None = None
     intent: Literal["high", "mid", "low"] | None = None
-    # ── 状态机（9 种） ──
+    # ── 状态机 ──
+    # 前 9 项是主状态机；后 8 项是历史数据中已实际存在、且业务仍在使用的状态
+    # （contacted/follow_up/pending_reply/qualified/new/lost/won/wechat_guide）。
+    # 缺失会让 PATCH 这些线索直接 422，用户无法把线索推进到「已联系/跟进中」。
     status: Literal[
         "collected", "pending_outreach", "throttled", "sent", "replied",
         "wechat_added", "deal_won", "send_failed", "rejected",
+        "contacted", "follow_up", "pending_reply", "qualified",
+        "new", "lost", "won", "wechat_guide",
     ] | None = None
     account: str | None = None
     throttled_note: str | None = None

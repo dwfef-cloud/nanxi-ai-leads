@@ -53,20 +53,6 @@ def list_customers(
     return result
 
 
-@router.get("/{customer_id}")
-def get_customer(
-    customer_id: str,
-    service: CustomerService = Depends(get_customer_service),
-) -> dict:
-    """单个客户详情（含商机阶段和跟进日志）"""
-    try:
-        customer = service.get_customer(customer_id)
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Customer not found") from exc
-    logs = service.list_logs(customer_id)
-    return _customer_to_dict(customer, logs)
-
-
 @router.get("/stage-meta")
 def get_stage_meta() -> dict:
     """商机阶段元数据（7个阶段的标签、颜色、顺序）"""
@@ -79,6 +65,20 @@ def get_stage_meta() -> dict:
         "won": {"label": "已成交", "cls": "deal", "order": 6},
         "lost": {"label": "已流失", "cls": "rejected", "order": 7},
     }
+
+
+@router.get("/{customer_id}")
+def get_customer(
+    customer_id: str,
+    service: CustomerService = Depends(get_customer_service),
+) -> dict:
+    """单个客户详情（含商机阶段和跟进日志）"""
+    try:
+        customer = service.get_customer(customer_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Customer not found") from exc
+    logs = service.list_logs(customer_id)
+    return _customer_to_dict(customer, logs)
 
 
 @router.post("")

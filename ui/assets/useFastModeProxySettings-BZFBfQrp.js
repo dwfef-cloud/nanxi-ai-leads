@@ -1,0 +1,1 @@
+import{y as n}from"./index-1pPBwPwk.js";function c(r,t,a){const o={[`${t}ProxyMode`]:"dynamic",[`${t}ProxyScheme`]:"socks5",[`${t}ProxyAddress`]:"",[`${t}ProxyUsername`]:"",[`${t}ProxyPassword`]:""},d=Object.keys(o);return n(()=>{const s=r();return[s,a(),...d.map(e=>s==null?void 0:s[e])]},([s,e])=>{s&&e&&Object.assign(s,o)},{immediate:!0})}export{c as u};

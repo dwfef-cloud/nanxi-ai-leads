@@ -12,6 +12,14 @@ def test_health() -> None:
     assert response.json() == {"status": "ok"}
 
 
+def test_customer_stage_meta_route_is_not_captured_as_customer_id() -> None:
+    response = client.get("/api/customers/stage-meta")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["added"]["label"] == "已加微"
+    assert data["won"]["order"] == 6
+
+
 def test_create_and_list_lead() -> None:
     payload = {
         "nickname": "test-user",

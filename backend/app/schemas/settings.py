@@ -20,6 +20,7 @@ class AISettings(BaseModel):
     provider: str = Field(default="doubao", description="提供商：doubao / dashscope")
     api_key: str = Field(default="", description="API Key（明文存储，读取时不脱敏）")
     model: str = Field(default="", description="模型名称/Endpoint ID")
+    base_url: str = Field(default="", description="OpenAI 兼容模型服务地址")
     temperature: float = Field(default=0.7, ge=0, le=2, description="采样温度 0-2")
     timeout: int = Field(default=30, ge=1, le=120, description="请求超时（秒）")
 
@@ -29,6 +30,7 @@ class AISettingsUpdate(BaseModel):
     provider: str | None = None
     api_key: str | None = None
     model: str | None = None
+    base_url: str | None = None
     temperature: float | None = Field(default=None, ge=0, le=2)
     timeout: int | None = Field(default=None, ge=1, le=120)
 

@@ -1,0 +1,1 @@
+function u(i={}){const s=Number(i.publishTimeMs);if(Number.isFinite(s)&&s>0){const t=new Date(s);if(Number.isFinite(t.getTime())){const e=n=>String(n).padStart(2,"0");return`${t.getFullYear()}-${e(t.getMonth()+1)}-${e(t.getDate())} ${e(t.getHours())}:${e(t.getMinutes())}`}}return i.publishTimeText?`采集时：${i.publishTimeText}`:"未获取"}export{u as f};

@@ -262,6 +262,13 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; }
 }
 .nav-badge--count { background: var(--line-strong); color: var(--ink-soft); font-weight: 600; }
 
+.sidenav__group {
+  margin: 16px 13px 6px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: var(--ink-faint);
+}
+
 .sidenav__footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
 .north-star {
   border: 1px solid var(--line);
@@ -554,7 +561,7 @@ textarea { resize: vertical; min-height: 74px; line-height: 1.6; }
 .msg--in  { align-self: flex-start; background: var(--paper-deep); border-bottom-left-radius: 3px; }
 .msg__meta { font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; }
 
-.kv { display: grid; grid-template-columns: 88px 1fr; gap: 6px 12px; font-size: 13px; }
+.kv { display: grid; grid-template-columns: minmax(88px, max-content) 1fr; gap: 6px 12px; font-size: 13px; }
 .kv dt { color: var(--ink-faint); }
 .kv dd { color: var(--ink); }
 
@@ -667,6 +674,35 @@ textarea { resize: vertical; min-height: 74px; line-height: 1.6; }
   .health-row { grid-template-columns: 1fr 110px; }
   .health-row .factor-grid { display: none; }
 }
+
+@media (max-width: 520px) {
+  .sidenav { padding: 8px; overflow-x: visible; }
+  .sidenav__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    gap: 2px;
+  }
+  .sidenav__list a {
+    justify-content: center;
+    padding: 8px 2px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  .sidenav .nav-badge { display: none; }
+
+  .inbox-shell .inbox-list {
+    display: flex !important;
+    width: 100% !important;
+    border-right: 0 !important;
+  }
+  .inbox-shell .inbox-detail { display: none !important; }
+  .inbox-shell[data-mobile-detail="true"] .inbox-list { display: none !important; }
+  .inbox-shell[data-mobile-detail="true"] .inbox-detail { display: flex !important; }
+  .inbox-back { display: inline-flex !important; }
+}
+
+.inbox-back { display: none; }
 
 /* ════════ 导航分组（业务域） ════════ */
 .nav-group {

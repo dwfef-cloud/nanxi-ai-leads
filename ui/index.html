@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- M1：frame-src 由 'none' 放开为 https:/http: —— bridge-views.js 需在浏览器环境
+         以 iframe 嵌入真实抖音页（creator-micro / douyin web）；桌面壳走原生
+         BrowserView 不受影响。其余加固指令保持不变。 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: file: https: http:; media-src 'self' data: blob: file: https: http:; font-src 'self' data: https: http:; connect-src 'self' https: http: wss:; worker-src 'self' blob:; object-src 'none'; frame-src https: http:; base-uri 'none'; form-action 'none'" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>阿里山AI获客</title>
+    <script src="./theme-init.js"></script>
+    <script src="./error-stack-probe.js?v=20261119"></script>
+    <!-- ?v= 版本参数：桥接脚本无 Cache-Control 头，浏览器启发式缓存会拿着旧脚本
+         继续跑（历史 P0：send 修复后页面仍走旧逻辑）。改桥接脚本时递增 v。 -->
+    <script src="./demo-bridge.js?v=20261114"></script>
+    <!-- M0 真桥接：仅新增这一行，bundle 与样式零改动；?demo=1 可回退演示数据 -->
+    <script src="./live-bridge.js?v=20261121-countdown-v1"></script>
+    <script src="./leadgen-ad-skip-option.js?v=20261121-ad-skip-v1"></script>
+    <!-- 浏览器环境无 Electron BrowserView：创作聚合 / 消息聚合改由离线数据视图承载 -->
+    <script src="./bridge-views.js?v=20261114"></script>
+    <!-- 执行历史入口：只追加一个浮层按钮，点开加载 /history（真实执行记录） -->
+    <script src="./history-entry.js"></script>
+    <script src="./offline-entry.js?v=20261115"></script>
+    <script src="./model-settings-entry.js?v=20261121-trace-layout"></script>
+    <script src="./live-acceptance-entry.js?v=20261115"></script>
+    <script src="./leadgen-runtime-controls.js?v=20261115-v2"></script>
+    <script src="./task-countdown.js?v=20261121-bottom-bar-v2"></script>
+    <script type="module" src="./assets/index-1pPBwPwk.js?v=20261119-leadgen-stay-default"></script>
+    <script type="module" src="./assets/LiveDashboardRuntime.js"></script>
+    <link rel="stylesheet" href="./assets/index-P3z6CmKq.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

@@ -20,7 +20,7 @@ from app.repositories.base import Repository
 
 
 def _date_part(dt_str) -> str | None:
-    """从 ISO  datetime 字符串提取日期部分 YYYY-MM-DD"""
+    """从 ISO datetime 字符串提取日期部分 YYYY-MM-DD"""
     if not dt_str:
         return None
     s = str(dt_str)
@@ -33,6 +33,11 @@ def _in_range(dt_str, start_date: str, end_date: str) -> bool:
     if d is None:
         return False
     return start_date <= d <= end_date
+
+
+# 南溪存量 leads 状态口径（历史数据两套命名并存，统计时合并）
+_WECHAT_STATUSES = frozenset({"wechat_added", "deal_won", "won"})
+_DEAL_STATUSES = frozenset({"deal_won", "won"})
 
 
 class ReportService:
@@ -103,6 +108,8 @@ class ReportService:
             if created and created in trend_map:
                 trend_map[created]["new_leads"] += 1
             wechat = _date_part(lead.wechat_added_at.isoformat() if lead.wechat_added_at else None)
+            if not wechat and lead.status in _WECHAT_STATUSES:
+                wechat = created  # 历史数据缺 wechat_added_at：按建线时间兜底
             if wechat and wechat in trend_map:
                 trend_map[wechat]["added_wechat"] += 1
         points = [
@@ -130,13 +137,16 @@ class ReportService:
             created = _date_part(lead.created_at.isoformat() if lead.created_at else None)
             if created and _in_range(created, start_date, end_date):
                 new_leads += 1
-            # 加微：按 wechat_added_at
+            # 加微：优先按 wechat_added_at；历史数据缺失该字段时按状态 + 建线时间兜底
             wechat = _date_part(lead.wechat_added_at.isoformat() if lead.wechat_added_at else None)
-            if wechat and _in_range(wechat, start_date, end_date):
+            if wechat:
+                if _in_range(wechat, start_date, end_date):
+                    added_wechat += 1
+            elif lead.status in _WECHAT_STATUSES and created and _in_range(created, start_date, end_date):
                 added_wechat += 1
-            # 成交：按 deal_at
-            if lead.status == "deal_won":
-                deal_dt = _date_part(lead.deal_at.isoformat() if lead.deal_at else None)
+            # 成交：status 两套历史命名（deal_won / won）；缺 deal_at 时按建线时间兜底
+            if lead.status in _DEAL_STATUSES:
+                deal_dt = (_date_part(lead.deal_at.isoformat()) if lead.deal_at else created)
                 if deal_dt and _in_range(deal_dt, start_date, end_date):
                     deals += 1
                     deal_amount += float(lead.deal_amount or 0)

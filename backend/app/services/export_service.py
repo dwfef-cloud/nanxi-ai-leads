@@ -15,10 +15,11 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+from app.paths import EXPORT_DIR
 from app.repositories.base import Repository
 
-# 导出文件根目录（D 盘，C 盘空间不足）
-EXPORT_DIR = Path(r"D:\.exports")
+# 导出文件根目录：随包放在 <软件根>/data/exports，可用 EXPORT_DIR 覆盖（原先硬编码 D:\.exports）
+
 
 # 线索导出列定义（中文表头 + 字段取值函数）
 _LEAD_COLUMNS: list[tuple[str, str]] = [

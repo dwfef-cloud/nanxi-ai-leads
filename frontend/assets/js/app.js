@@ -1,12 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   获客系统 v1.0 · 轻量 SPA（纯前端）
-   信息架构（业务视角）：
-     工作台 · 获客（线索池/私信任务/话术库/抖音账号）
-     · 客户管理（客户与商机/今日跟进）
-     · 经营分析（转化漏斗/触点归因/账号健康度/合规风险）
-     · 设置（上手向导）
-   所有数据经 window.MOCK_API 获取（见 mock-data.js），
-   本文件不含任何后端请求。
+   获客系统 · 4 模块精华版 SPA
+   主导航：工作台 · 线索池 · 互动中心 · 客户与商机
+   扩展配置通过右上角配置入口访问。
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -176,36 +171,9 @@
   });
   $('#btn-exit-safe-mode').addEventListener('click', openExitSafeModeModal);
 
-  /* ══════════ 配置弹窗 ══════════ */
+  /* ══════════ 配置入口 ══════════ */
   $('#btn-settings').addEventListener('click', () => {
-    openModal(`
-      <h2 id="modal-title">系统配置</h2>
-      <div class="grid grid--2" style="gap:14px">
-        <div class="field"><label for="cfg-daily">单账号日频上限（R1 阈值）</label>
-          <input type="number" id="cfg-daily" value="80"><span class="field__hint">达到后自动降速至 40/天，连续 2 天触顶暂停 24h</span></div>
-        <div class="field"><label for="cfg-health">安全模式健康分阈值</label>
-          <input type="number" id="cfg-health" value="40"><span class="field__hint">health_score 低于该值自动进入安全模式</span></div>
-        <div class="field"><label for="cfg-bl">黑名单日增熔断阈值（R3）</label>
-          <input type="number" id="cfg-bl" value="3"><span class="field__hint">日增超过 3% 触发全量暂停 + 人工复核</span></div>
-        <div class="field"><label for="cfg-refresh">看板刷新策略（Q6）</label>
-          <select id="cfg-refresh">
-            <option>健康度预警：近实时（30s）</option>
-            <option>漏斗/成本：小时级</option>
-            <option>全部 T+1（最省资源）</option>
-          </select></div>
-        <div class="field"><label for="cfg-wecom">企微侧频控（IMP-030 双侧保护）</label>
-          <select id="cfg-wecom">
-            <option>培育 SOP：D1/D3 各 1 条（默认）</option>
-            <option>严格：仅 D1</option>
-          </select><span class="field__hint">过度群发把企微号搞封 = 同类风险，护栏覆盖抖音+企微双侧</span></div>
-      </div>
-      <div class="confirm-note">配置变更将写入审计日志。CORS 已按账号/Token 隔离（替代 v0.2 的 * 通配）。</div>
-      <div class="modal__foot">
-        <button type="button" class="btn" data-close>取消</button>
-        <button type="button" class="btn btn--primary" data-close onclick="void 0" id="btn-save-cfg">保存</button>
-      </div>
-    `);
-    $('#btn-save-cfg').addEventListener('click', () => { closeModal(); toast('配置已保存（演示态，未落库）'); });
+    location.hash = '#/settings';
   });
 
   /* ══════════ 弹窗基础设施 ══════════ */
@@ -434,31 +402,52 @@
   document.addEventListener('click', (e) => {
     const wrap = $('#bell-wrap');
     if (wrap && !wrap.contains(e.target)) closeBellPanel();
-  });  const routes = {
+  });
+
+  const routes = {
     workbench: viewWorkbench,
     leads: viewLeads,
-    dm: viewDm,
-    'dm-inbox': viewDmInbox,
-    comments: viewComments,
-    scripts: viewScripts,
-    accounts: viewAccounts,
-    crawl: viewCrawl,
+    interactions: viewInteractions,
     customers: viewCustomers,
-    followups: viewFollowups,
     funnel: viewFunnel,
     reports: viewReports,
-    attribution: viewAttribution,
-    health: viewHealth,
     risk: viewRisk,
-    wizard: viewWizard,
     settings: viewSettings,
-    monitor: viewMonitor,
-    backup: viewBackup,
-    notifications: viewNotifications,
   };
+
+  let interactionView = 'comments';
+  let interactionRenderId = 0;
+
+  async function viewInteractions(nextView = interactionView) {
+    interactionView = nextView === 'inbox' ? 'inbox' : 'comments';
+    const renderId = ++interactionRenderId;
+
+    if (interactionView === 'inbox') await viewDmInbox();
+    else await viewComments();
+
+    if (renderId !== interactionRenderId || location.hash !== '#/interactions') return;
+    const view = $('.view', main);
+    if (!view) return;
+
+    const tabs = document.createElement('div');
+    tabs.className = 'subtabs interaction-tabs';
+    tabs.setAttribute('role', 'tablist');
+    tabs.innerHTML = `
+      <button type="button" data-interaction-view="comments" aria-selected="${interactionView === 'comments'}">评论回复</button>
+      <button type="button" data-interaction-view="inbox" aria-selected="${interactionView === 'inbox'}">私信收件箱</button>`;
+    const pageHeader = $('.page-head', view);
+    if (pageHeader) pageHeader.insertAdjacentElement('afterend', tabs);
+    else view.prepend(tabs);
+
+    $$('[data-interaction-view]', tabs).forEach((button) => {
+      button.addEventListener('click', () => viewInteractions(button.dataset.interactionView));
+    });
+  }
+
   function route() {
     const hash = (location.hash || '#/workbench').replace('#/', '');
     const name = routes[hash] ? hash : 'workbench';
+    if (name !== hash) history.replaceState(null, '', '#/workbench');
     $$('[data-nav]').forEach((a) => a.setAttribute('aria-current', a.dataset.nav === name ? 'page' : 'false'));
     main.innerHTML = '';
     routes[name]();
@@ -536,7 +525,7 @@
             <div class="card">
               <div class="card__head">
                 <span class="card__title">今日待办</span>
-                <a class="btn-link" href="#/followups">全部 ${undone.length} 条 →</a>
+                <a class="btn-link" href="#/customers">查看客户 →</a>
               </div>
               <div class="todo">
                 ${todoTop.map((f) => `
@@ -551,7 +540,7 @@
             <div class="card">
               <div class="card__head">
                 <span class="card__title">实时动态</span>
-                <a class="btn-link" href="#/risk">审计日志 →</a>
+                <a class="btn-link" href="#/leads">查看线索 →</a>
               </div>
               <ul class="timeline">
                 ${wb.activity.slice(0, 4).map((e) => `
@@ -1067,6 +1056,8 @@
       inboxState.detail = await API.getDmConversation(convId);
       renderList();
       renderDetail();
+      const shell = $('#inbox-shell');
+      if (shell) shell.dataset.mobileDetail = 'true';
     }
 
     function renderList() {
@@ -1131,6 +1122,9 @@
 
       detailEl.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);flex-shrink:0">
+          <button type="button" class="btn btn--ghost btn--sm inbox-back" id="btn-inbox-back" aria-label="返回会话列表" title="返回会话列表">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="transform:rotate(180deg)" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </button>
           <span class="avatar" style="background:hsl(${d.avatarHue || 200} 45% 44%)">${esc((d.nickname || '?').slice(0, 1))}</span>
           <div style="flex:1;min-width:0">
             <div style="font-weight:600">${esc(d.nickname)}</div>
@@ -1175,6 +1169,11 @@
       // 自动滚动到底部
       const msgList = $('#inbox-msg-list', detailEl);
       if (msgList) msgList.scrollTop = msgList.scrollHeight;
+
+      $('#btn-inbox-back', detailEl)?.addEventListener('click', () => {
+        const shell = $('#inbox-shell');
+        if (shell) shell.dataset.mobileDetail = 'false';
+      });
 
       // 发送回复
       $('#btn-send-reply', detailEl)?.addEventListener('click', sendReply);
@@ -1290,9 +1289,9 @@
           icon: 'dm', title: '私信收件箱', desc: '用户主动私信承接 · 回复 → 加微 → 转客户，全链路闭环',
           actions: '<button type="button" class="btn btn--ghost btn--sm" id="btn-simulate-dm">模拟收到私信</button>',
         })}
-        <div class="card" style="padding:0;display:flex;height:calc(100vh - 220px);min-height:480px;overflow:hidden">
-          <div id="inbox-list" style="width:300px;border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0"></div>
-          <div id="inbox-detail" style="flex:1;display:flex;flex-direction:column;min-width:0"></div>
+        <div class="card inbox-shell" id="inbox-shell" data-mobile-detail="false" style="padding:0;display:flex;height:calc(100vh - 220px);min-height:480px;overflow:hidden">
+          <div class="inbox-list" id="inbox-list" style="width:300px;border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0"></div>
+          <div class="inbox-detail" id="inbox-detail" style="flex:1;display:flex;flex-direction:column;min-width:0"></div>
         </div>
       </div>`;
 
@@ -1332,12 +1331,26 @@
      视图：客户与商机（IMP-028/029/031）
      ═══════════════════════════════════════════ */
   const STAGE_ORDER = ['added', 'measured', 'proposal', 'quoted', 'negotiating'];
+  const DEFAULT_STAGE_META = {
+    added: { label: '已加微', cls: 'wechat', order: 1 },
+    measured: { label: '已量房', cls: 'sent', order: 2 },
+    proposal: { label: '方案中', cls: 'pending', order: 3 },
+    quoted: { label: '已报价', cls: 'throttled', order: 4 },
+    negotiating: { label: '谈判中', cls: 'mid', order: 5 },
+    won: { label: '已成交', cls: 'deal', order: 6 },
+    lost: { label: '已流失', cls: 'rejected', order: 7 },
+  };
   const STAGE_NEXT_LABEL = {
     added: '已量房（预约量房）', measured: '方案中（出方案）', proposal: '已报价（发报价单）', quoted: '谈判中', negotiating: '成交（签约）',
   };
 
   async function viewCustomers() {
-    [state.customers, state.stageMeta] = await Promise.all([API.getCustomers(), API.getStageMeta()]);
+    const [customers, stageMeta] = await Promise.all([
+      API.getCustomers(),
+      API.getStageMeta().catch(() => DEFAULT_STAGE_META),
+    ]);
+    state.customers = Array.isArray(customers) ? customers : [];
+    state.stageMeta = { ...DEFAULT_STAGE_META, ...(stageMeta || {}) };
     renderCustomers();
   }
 
@@ -1386,9 +1399,10 @@
   }
 
   function customerRow(c, stages) {
-    const st = stages[c.stage];
+    const st = stages[c.stage] || { label: c.stage || '未知阶段', cls: 'pending' };
     const src = state.sourceMeta[c.source] || { label: c.source, cls: 'collected' };
-    const lastLog = c.logs[c.logs.length - 1];
+    const logs = Array.isArray(c.logs) ? c.logs : [];
+    const lastLog = logs.length ? logs[logs.length - 1] : null;
     return `
       <tr data-cu-id="${c.id}" style="cursor:pointer${c.stage === 'lost' ? ';opacity:.6' : ''}">
         <td><div class="cell-user">
@@ -1400,7 +1414,7 @@
         <td class="num" style="font-weight:600">${c.dealAmount ? `<span style="color:var(--ok)">${wan(c.dealAmount)}</span>` : wan(c.estValue)}</td>
         <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-soft)">
           ${c.nextAction ? esc(c.nextAction) + ` <small style="color:var(--ink-faint)">(${esc(c.nextAt)})</small>` : '—'}</td>
-        <td style="color:var(--ink-faint);font-size:12px">${esc(lastLog.time)} · ${esc(lastLog.text)}</td>
+        <td style="color:var(--ink-faint);font-size:12px">${lastLog ? `${esc(lastLog.time)} · ${esc(lastLog.text)}` : '暂无跟进记录'}</td>
         <td><button type="button" class="btn-link">详情</button></td>
       </tr>`;
   }
@@ -1603,57 +1617,81 @@
      ═══════════════════════════════════════════ */
   async function viewFunnel() {
     main.innerHTML = '<div class="view"><div class="empty"><p>加载中…</p></div></div>';
-    const d = await API.getFunnel();
-    const [exposure, collected, outreach, replied, wechat, deal] = d.stages.map((s) => s.value);
-    const pct = (a, b) => ((b / a) * 100).toFixed(1);
-    const rows = d.stages.map((s, i) => {
-      const width = Math.max(4, (s.value / exposure) * 100);
-      const conv = i === 0 ? null : `${pct(d.stages[i - 1].value, s.value)}%`;
-      return `
-        <div class="funnel__row">
-          <div class="funnel__label">${esc(s.label)}</div>
-          <div class="funnel__bar-track"><div class="funnel__bar" style="width:${width}%">${fmt(s.value)}</div></div>
-          <div class="funnel__conv">${conv ? `上步转化 <b>${conv}</b>` : '基准'}</div>
-        </div>`;
-    }).join('');
+    const d = await API.fetchExecutionFunnel(30);
+    const t = d.today;
+    const stageRows = (stages) => {
+      const base = Math.max(...stages.map((s) => s.value), 1);
+      return stages.map((s, i) => {
+        const width = Math.max(3, (s.value / base) * 100);
+        const prev = i === 0 ? null : stages[i - 1].value;
+        const conv = (i === 0 || !prev) ? null : ((s.value / prev) * 100).toFixed(1) + '%';
+        return `
+          <div class="funnel__row">
+            <div class="funnel__label">${esc(s.label)}</div>
+            <div class="funnel__bar-track"><div class="funnel__bar" style="width:${width}%">${fmt(s.value)}</div></div>
+            <div class="funnel__conv">${conv ? `上步转化 <b>${conv}</b>` : (i === 0 ? '基准' : '—')}</div>
+          </div>`;
+      }).join('');
+    };
+    const sourceBadge = (ok, label) => `<span class="tag ${ok ? 'tag--low' : 'tag--high'}" style="margin-right:6px">${esc(label)}${ok ? ' 已接线' : ' 未接线'}</span>`;
+
+    const collectPoints = d.trend.map((p) => ({ date: p.date, v: p.collected }));
+    const commentPoints = d.trend.map((p) => ({ date: p.date, v: p.commented }));
+    const dmPoints = d.trend.map((p) => ({ date: p.date, v: p.dm }));
+    const hasTrend = d.trend.some((p) => p.collected || p.commented || p.dm);
 
     main.innerHTML = `
       <div class="view">
-        ${pageHead({ icon: 'funnel', title: '转化漏斗', desc: '数据来自真实采集与埋点，替代 v0.2 假报表 · 全部触点统一漏斗' })}
+        ${pageHead({ icon: 'funnel', title: '转化漏斗', desc: '全部数字来自库内真实记录（采集候选 / 评论发送 / 私信频控 / 线索状态），不填充模拟值' })}
         <div class="grid grid--metrics">
-          ${metric('线索入库', fmt(collected), `${d.window} · 意向率 ${pct(exposure, collected)}%`)}
-          ${metric('加企微 ★ 北极星', fmt(wechat), `触达→加微 ${pct(outreach, wechat)}%`, 'brand')}
-          ${metric('成交', fmt(deal), `加微→成交 ${pct(wechat, deal)}%`)}
-          ${metric('单线索成本', `¥${d.cost.perLead}`, `单加微 ¥${d.cost.perWechatAdd} · 单成交 ¥${d.cost.perDeal}`)}
+          ${metric('今日采集评论', fmt(t.collected), `入池 ${fmt(t.qualified)} · 阈值 ≥${d.threshold} 分`)}
+          ${metric('今日评论互动', fmt(t.commented), 'comment_send_log sent_ok')}
+          ${metric('今日私信发送', fmt(t.dm), `回复 ${fmt(t.replied)}`, 'brand')}
+          ${metric('累计加企微', fmt(d.stages[4].value), `${esc(d.window)} · 成交 ${fmt(d.stages[5].value)}`)}
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card__head">
+            <span class="card__title">执行链路（${esc(d.window)}）</span>
+            <span class="card__hint">采集 → 筛选 → 互动 → 私信 → 回复 → 转化</span>
+          </div>
+          <div class="funnel">${stageRows(d.execStages)}</div>
+          <p class="card__hint" style="margin-top:10px">
+            数据源：${sourceBadge(d.sources.executionDb.ready, '执行库')}${sourceBadge(d.sources.mainDb.ready, '业务库')}${sourceBadge(d.sources.dmGuardDb.ready, '频控库')}
+            · 私信阶段只统计通过频控闸门后真实发送成功的记录
+          </p>
         </div>
         <div class="grid grid--main-side">
           <div class="card">
             <div class="card__head">
-              <span class="card__title">转化漏斗（${esc(d.window)}）</span>
+              <span class="card__title">经营漏斗（${esc(d.window)}）</span>
               <span class="card__hint">曝光 → 入库 → 触达 → 回复 → 加微 → 成交</span>
             </div>
-            <div class="funnel">${rows}</div>
+            <div class="funnel">${stageRows(d.stages)}</div>
           </div>
           <div class="card">
-            <div class="card__head"><span class="card__title">账怎么算</span></div>
+            <div class="card__head"><span class="card__title">成本与产出</span></div>
             <dl class="kv">
-              <dt>投入</dt><dd>¥${fmt(d.cost.totalSpend)}（人力+工具）</dd>
-              <dt>客单价</dt><dd>¥${fmt(d.cost.avgDealAmount)}（装修 2-30 万区间）</dd>
-              <dt>成交额</dt><dd>¥${fmt(deal * d.cost.avgDealAmount)}</dd>
-              <dt>ROI</dt><dd><strong style="color:var(--ok)">${((deal * d.cost.avgDealAmount) / d.cost.totalSpend).toFixed(1)} 倍</strong></dd>
-              <dt>一个加微值</dt><dd><strong>${wan(Math.round((deal * d.cost.avgDealAmount) / wechat))}</strong>（IMP-029 成交录入后可精确到实际金额）</dd>
+              <dt>投放成本</dt><dd>¥${fmt(d.cost.totalSpend)}</dd>
+              <dt>单线索成本</dt><dd>¥${fmt(d.cost.perLead)}</dd>
+              <dt>单加微成本</dt><dd>¥${fmt(d.cost.perWechatAdd)}</dd>
+              <dt>单成交成本</dt><dd>¥${fmt(d.cost.perDeal)}</dd>
+              <dt>成交金额</dt><dd>¥${fmt(d.dealAmount)}</dd>
+              <dt>客单价</dt><dd>¥${fmt(d.cost.avgDealAmount)}</dd>
             </dl>
-            <p class="card__hint" style="margin-top:10px">
-              老板视角：花 ¥${d.cost.perWechatAdd} 换一个企微好友、¥${d.cost.perDeal} 换一单。续费与否看这两个数。
-            </p>
+            <p class="card__hint" style="margin-top:10px">${esc(d.cost.basis)}</p>
           </div>
         </div>
         <div class="card">
           <div class="card__head">
-            <span class="card__title">加企微趋势（近 14 天 · wechat_added 埋点）</span>
-            <span class="card__hint">IMP-002 北极星核心计数，8-22 起爬升</span>
+            <span class="card__title">近 14 天执行趋势</span>
+            <span class="card__hint">采集 / 评论 / 私信三条真实计数</span>
           </div>
-          ${lineChart(d.wechatTrend)}
+          ${hasTrend ? `
+            <div class="grid grid--2">
+              <div><div class="card__hint" style="margin-bottom:6px">采集评论</div>${lineChart(collectPoints)}</div>
+              <div><div class="card__hint" style="margin-bottom:6px">评论互动</div>${lineChart(commentPoints)}</div>
+              <div><div class="card__hint" style="margin-bottom:6px">私信发送</div>${lineChart(dmPoints)}</div>
+            </div>` : '<div class="empty"><p>近 14 天暂无执行记录</p></div>'}
         </div>
       </div>`;
   }
@@ -1810,7 +1848,9 @@
     }
 
     function showExportResult(res) {
-      const url = 'http://127.0.0.1:8000' + res.fileUrl;
+      const origin = (typeof location !== 'undefined' && /^https?:$/.test(location.protocol))
+        ? location.origin : 'http://127.0.0.1:8899';
+      const url = origin + res.fileUrl;
       $('#exp-result').innerHTML = `
         <div style="padding:10px 14px;background:var(--bg-soft);border-radius:8px;border:1px solid var(--border)">
           <span style="color:var(--ok)">✓ 导出成功</span>
@@ -1974,18 +2014,19 @@
      ═══════════════════════════════════════════ */
   async function viewRisk() {
     main.innerHTML = '<div class="view"><div class="empty"><p>加载中…</p></div></div>';
-    const c = await API.getCompliance();
+    const [c, g] = await Promise.all([API.getCompliance(), API.fetchExecutionCompliance(30)]);
     const dotColor = { ok: 'var(--ok)', info: 'var(--info)', warn: 'var(--warn)', danger: 'var(--danger)' };
     const ruleTag = (s) => s === 'hit' ? '<span class="tag tag--high">已命中</span>' : '<span class="tag tag--low">待命</span>';
+    const lim = g.dmGuard.limits;
 
     main.innerHTML = `
       <div class="view">
-        ${pageHead({ icon: 'shield', title: '合规风险', desc: '合规护栏可视化 —— 强监管行业的信任底线（差异化护城河）' })}
+        ${pageHead({ icon: 'shield', title: '合规风险', desc: '护栏实时状态全部读自执行库：配额账本、官方频控、账号池状态机、编排器阻断' })}
         <div class="grid grid--metrics">
-          ${metric('近7天退订', c.summary.unsubscribe7d, 'user_blocked/unsubscribe 埋点')}
-          ${metric('黑名单总数', c.summary.blacklistTotal, `日增均值 ${c.summary.blacklistDelta7d}%（R3 阈值 3%）`)}
-          ${metric('近7天投诉', c.summary.complaints7d, 'complaint 埋点')}
-          ${metric('审计事件', c.summary.auditEvents, 'v0.2 审计表 · 自托管可导出')}
+          ${metric('今日点赞配额', fmt(g.quota.like), g.quota.ready ? `${g.quota.accounts} 个账号已记账` : '配额账本未产生记录')}
+          ${metric('今日评论配额', fmt(g.quota.comment), `read ${fmt(g.quota.read)} · dm ${fmt(g.quota.dm)}`)}
+          ${metric('今日私信发送', `${fmt(g.dmGuard.todaySent)} / ${lim.dailyRecipients}`, `近 1 小时 ${fmt(g.dmGuard.hourSent)} / ${lim.hourlyRecipients}`, 'brand')}
+          ${metric('编排器合规阻断', fmt(g.pipeline.blockedEngage + g.pipeline.blockedDm), `互动 ${g.pipeline.blockedEngage} · 私信 ${g.pipeline.blockedDm}`, (g.pipeline.blockedEngage + g.pipeline.blockedDm) ? 'danger' : '')}
         </div>
         <div class="grid grid--main-side">
           <div class="card">
@@ -1993,14 +2034,14 @@
               <span class="card__title">审计事件流（最近）</span>
               <span class="card__hint">全触达可审计 · 支持退订，满足强监管要求（US5）</span>
             </div>
-            <ul class="timeline">
+            ${c.audit.length ? `<ul class="timeline">
               ${c.audit.map((e) => `
                 <li>
                   <span class="timeline__dot" style="background:${dotColor[e.level]}"></span>
                   <span>${esc(e.text)}</span>
                   <span class="timeline__time num">${esc(e.time)}</span>
                 </li>`).join('')}
-            </ul>
+            </ul>` : '<div class="empty"><p>暂无审计事件</p></div>'}
           </div>
           <div class="card">
             <div class="card__head"><span class="card__title">决策规则引擎（R1/R2/R3）</span></div>
@@ -2017,6 +2058,62 @@
             <p class="card__hint" style="margin-top:12px">
               安全模式当前：${state.safeMode.active ? '<b style="color:var(--danger)">已启用（' + esc(state.safeMode.reason) + '）</b>' : '<b style="color:var(--ok)">未启用</b>'}
             </p>
+          </div>
+        </div>
+
+        <div class="grid grid--2" style="margin-top:16px">
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">私信官方频控（写死不可放开）</span>
+              <span class="card__hint">${g.dmGuard.ready ? '已接线' : '未产生发送记录'}</span>
+            </div>
+            <dl class="kv">
+              <dt>非互关 · 每收件人</dt><dd>${lim.perRecipient} 条</dd>
+              <dt>1 小时收件人上限</dt><dd>${lim.hourlyRecipients} 人（今日 ${fmt(g.dmGuard.hourRecipients)}）</dd>
+              <dt>1 天收件人上限</dt><dd>${lim.dailyRecipients} 人（今日 ${fmt(g.dmGuard.todayRecipients)}）</dd>
+              <dt>会话窗口</dt><dd>${lim.sessionWindowH} 小时内最多 ${lim.sessionWindowLimit} 条</dd>
+            </dl>
+            ${g.dmGuard.note ? `<p class="card__hint" style="margin-top:10px">${esc(g.dmGuard.note)}</p>` : ''}
+          </div>
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">账号池状态机</span>
+              <span class="card__hint">${g.pool.ready ? '已接线' : '未接线'}</span>
+            </div>
+            <dl class="kv">
+              <dt>账号总数</dt><dd>${fmt(g.pool.total)}</dd>
+              ${Object.entries(g.pool.byState || {}).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${fmt(v)}</dd>`).join('')}
+              <dt>24 小时风控事件</dt><dd>${fmt(g.pool.riskEventsDay)}</dd>
+              <dt>窗口内风控事件</dt><dd>${fmt(g.pool.riskEventsWindow)}</dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="grid grid--2" style="margin-top:16px">
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">编排器与写入安全</span>
+              <span class="card__hint">${esc(g.pipeline.note)}</span>
+            </div>
+            <dl class="kv">
+              <dt>窗口内运行次数</dt><dd>${fmt(g.pipeline.runsInWindow)}</dd>
+              <dt>断点续跑检查点</dt><dd>${fmt(g.pipeline.checkpoints)}</dd>
+              <dt>最近一次运行</dt><dd>${g.pipeline.lastRun ? esc(g.pipeline.lastRun.runId) + ' · ' + esc(g.pipeline.lastRun.stage) + ' · ' + esc(g.pipeline.lastRun.startedAt) : '暂无'}</dd>
+              <dt>评论发送结果</dt><dd>${Object.entries(g.sendStatus || {}).map(([k, v]) => esc(k) + ' ' + fmt(v)).join(' · ') || '窗口内无发送'}</dd>
+            </dl>
+          </div>
+          <div class="card">
+            <div class="card__head">
+              <span class="card__title">养号执行（W3）</span>
+              <span class="card__hint">${g.nurture.ready ? '已接线' : '未接线'}</span>
+            </div>
+            <dl class="kv">
+              <dt>养号场次</dt><dd>${fmt(g.nurture.sessions)}</dd>
+              <dt>浏览视频</dt><dd>${fmt(g.nurture.videosWatched)}</dd>
+              <dt>点赞</dt><dd>${fmt(g.nurture.likes)}</dd>
+              <dt>收藏</dt><dd>${fmt(g.nurture.favorites)}</dd>
+              <dt>评论浏览</dt><dd>${fmt(g.nurture.commentsBrowsed)}</dd>
+            </dl>
           </div>
         </div>
       </div>`;
@@ -2226,7 +2323,7 @@
         const result = await API.updateCommentTask(id, { status });
         if (result && result.ok !== false) {
           toast(status === 'user_dm' ? '已标记对方主动私信 ★ 转化成功！' : '已标记对方追评', 'ok');
-          viewComments(); // 重新渲染
+          viewInteractions('comments'); // 重新渲染互动中心
         }
       });
     });
@@ -2919,21 +3016,13 @@
   /* ══════════ 导航角标 ══════════ */
   async function renderNavBadges() {
     try {
-      const [leadsAll, accs, custs, fups, queue] = await Promise.all([
-        API.getLeads(), API.getAccounts(), API.getCustomers(), API.getFollowups(), API.getDmQueue(),
+      const [leadsAll, custs] = await Promise.all([
+        API.getLeads(), API.getCustomers(),
       ]);
-      $('#nav-leads-badge').textContent = leadsAll.length;
-
-      const dmActionable = queue.filter((q) => ['pending_outreach', 'send_failed'].includes(q.status)).length;
-      const dmBadge = $('#nav-dm-badge');
-      if (dmActionable > 0) { dmBadge.hidden = false; dmBadge.textContent = dmActionable; }
-
-      const accWarn = accs.filter((a) => a.healthScore < 40).length;
-      const accBadge = $('#nav-acc-badge');
-      if (accWarn > 0) { accBadge.hidden = false; accBadge.textContent = accWarn; }
-
-      $('#nav-cust-badge').textContent = custs.filter((c) => !['won', 'lost'].includes(c.stage)).length;
-      $('#nav-fu-badge').textContent = fups.filter((f) => !f.done).length;
+      const leadsBadge = $('#nav-leads-badge');
+      const customersBadge = $('#nav-cust-badge');
+      if (leadsBadge) leadsBadge.textContent = leadsAll.length;
+      if (customersBadge) customersBadge.textContent = custs.filter((c) => !['won', 'lost'].includes(c.stage)).length;
     } catch (e) { /* 静默 */ }
   }
 

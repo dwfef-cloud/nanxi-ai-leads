@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS leads (
     id                  TEXT PRIMARY KEY,
     nickname            TEXT NOT NULL DEFAULT '',
     source_url          TEXT NOT NULL DEFAULT '',
+    video_id            TEXT NOT NULL DEFAULT '',
+    comment_id          TEXT NOT NULL DEFAULT '',
+    comment_user_id     TEXT NOT NULL DEFAULT '',
+    comment_time        TEXT NOT NULL DEFAULT '',
     source_keyword      TEXT NOT NULL DEFAULT '',
     platform            TEXT NOT NULL DEFAULT 'douyin',
     external_id         TEXT NOT NULL DEFAULT '',
@@ -418,3 +422,19 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
 CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(created_at);
+
+-- 账号资料每日快照（对标阿里山「每日自动统计」：粉丝/关注/作品/获赞）
+-- 数据来源：桌面壳在用户本人已登录的创作者中心页面上只读读取，经
+-- /api/accounts/profile-sync 落库；同一天反复采集则刷新当日快照。
+CREATE TABLE IF NOT EXISTS account_stats_daily (
+    account_id TEXT NOT NULL,
+    day        TEXT NOT NULL,
+    nickname   TEXT NOT NULL DEFAULT '',
+    douyin_id  TEXT NOT NULL DEFAULT '',
+    following  INTEGER NOT NULL DEFAULT 0,
+    followers  INTEGER NOT NULL DEFAULT 0,
+    works      INTEGER NOT NULL DEFAULT 0,
+    likes      INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (account_id, day)
+);

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 
+from app.core.demo_guard import require_demo_seed
 from app.core.dependencies import get_repository
 from app.models.domain import Lead, Task, LeadBehaviorEvent
 from app.repositories.memory import MemoryRepository
@@ -9,9 +10,12 @@ from app.repositories.memory import MemoryRepository
 router = APIRouter(prefix="/demo", tags=["demo"])
 
 
-@router.post("/seed-report-data")
+@router.post("/seed-report-data", dependencies=[Depends(require_demo_seed)])
 def seed_report_data(repo: MemoryRepository = Depends(get_repository)) -> dict:
-    """Seed realistic seven-day data so the daily report can be reviewed end to end."""
+    """Seed realistic seven-day data so the daily report can be reviewed end to end.
+
+    默认关闭（见 app/core/demo_guard.py）：该接口会直接向主库写入假线索。
+    """
     today = datetime.now(timezone.utc).replace(hour=10, minute=0, second=0, microsecond=0)
     samples = [
         ("深圳", "new", "C", 28, 0, "装修预算还没定，先了解一下", "全屋装修"),

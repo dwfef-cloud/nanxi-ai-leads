@@ -1,0 +1,4 @@
+interface:
+  display_name: "Leadgen Live Debugging"
+  short_description: "Trace desktop leadgen failures end to end"
+  default_prompt: "Diagnose this desktop leadgen failure from run logs and code paths. Identify the first failing stage and confirmed cause, then recommend safe recovery and focused regression coverage."

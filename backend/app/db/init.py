@@ -14,12 +14,10 @@ import sqlite3
 from pathlib import Path
 
 from app.models.domain import now_utc
+from app.paths import DB_PATH as DEFAULT_DB_PATH
 
 import os
 
-# 项目根目录（app/ 的上一级）
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "lead_system.db"
 SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
 
 
@@ -83,6 +81,13 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
         conn.execute("ALTER TABLE messages ADD COLUMN is_read INTEGER NOT NULL DEFAULT 0")
     if not _has_column("messages", "script_id"):
         conn.execute("ALTER TABLE messages ADD COLUMN script_id TEXT")
+
+    # Monitor retries need an exact comment target. These platform identifiers
+    # stay in the database and are excluded from renderer read models.
+    if _has_table("leads"):
+        for column in ("video_id", "comment_id", "comment_user_id", "comment_time"):
+            if not _has_column("leads", column):
+                conn.execute(f"ALTER TABLE leads ADD COLUMN {column} TEXT NOT NULL DEFAULT ''")
 
     # ── 多账号调度模块迁移 ──
     if not _has_column("accounts", "weight"):

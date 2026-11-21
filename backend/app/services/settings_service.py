@@ -37,7 +37,7 @@ CAT_NOTIFICATION = "notification"
 
 # 各分类的字段名集合（用于审计日志描述）
 _CATEGORY_FIELDS: dict[str, list[str]] = {
-    CAT_AI: ["provider", "api_key", "model", "temperature", "timeout"],
+    CAT_AI: ["provider", "api_key", "model", "base_url", "temperature", "timeout"],
     CAT_STRATEGY: ["auto_score_threshold", "r2_switch_threshold", "daily_frequency_limit"],
     CAT_COMPLIANCE: ["r1_threshold", "r1_enabled", "r2_threshold", "r2_enabled", "r3_threshold", "r3_enabled"],
     CAT_CRAWL: ["default_keywords", "crawl_interval_minutes", "max_comments_per_video"],

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>账号池管理 · 批量清理</title>
+<link rel="stylesheet" href="accounts.css" />
+<link rel="icon" href="favicon.svg" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">A</span>
+    <div class="brand-text">
+      <h1>账号池管理</h1>
+      <p>多选 / 全选 / 批量删除 · 与壳同一套设计</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button id="themeBtn" class="ghost" type="button">切换主题</button>
+    <a class="ghost" href="/ui/" target="_blank" rel="noreferrer">返回壳</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="stat-row" id="stats">
+    <div class="stat"><span class="k">账号总数</span><b id="sAll">-</b></div>
+    <div class="stat"><span class="k">重名账号</span><b id="sDup">-</b></div>
+    <div class="stat warn"><span class="k">测试账号</span><b id="sTest">-</b></div>
+    <div class="stat"><span class="k">当前筛选</span><b id="sShown">-</b></div>
+  </section>
+
+  <section class="card">
+    <div class="toolbar">
+      <div class="left">
+        <input id="kw" type="search" placeholder="搜索名称 / 昵称 / ID" autocomplete="off" />
+        <div class="pills" id="pills">
+          <button class="pill active" data-only="">全部</button>
+          <button class="pill" data-only="duplicate">重名</button>
+          <button class="pill" data-only="test">测试账号</button>
+          <button class="pill" data-only="nologin">无登录态</button>
+        </div>
+      </div>
+      <div class="right">
+        <label class="check">
+          <input type="checkbox" id="selectAll" />
+          <span>全选<b id="selCount">0</b></span>
+        </label>
+        <button id="resetBtn" class="ghost" type="button" disabled>复位状态</button>
+        <button id="delBtn" class="danger" type="button" disabled>删除所选</button>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">勾选后可批量删除；删除只影响账号与其运行痕迹，历史线索与任务记录都会保留。</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-check"></th>
+            <th>名称</th>
+            <th>昵称</th>
+            <th>平台</th>
+            <th>状态</th>
+            <th>健康分</th>
+            <th>日频</th>
+            <th>关联线索</th>
+            <th>标记</th>
+            <th>创建时间</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="10" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="foot" id="foot"></div>
+  </section>
+</main>
+
+<div class="modal-mask" id="mask" hidden>
+  <div class="modal">
+    <h2 id="mTitle">确认删除</h2>
+    <p id="mBody"></p>
+    <ul id="mList" class="m-list"></ul>
+    <div class="modal-actions">
+      <button class="ghost" id="mCancel" type="button">取消</button>
+      <button class="danger" id="mOk" type="button">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="accounts.js"></script>
+</body>
+</html>

@@ -17,7 +17,7 @@ def test_detail_endpoints() -> None:
             "external_id": "detail-endpoint-900",
         },
     ).json()
-    account = client.post("/api/accounts", json={"name": "acct-detail", "platform": "douyin"}).json()
+    account = client.post("/api/accounts", json={"nickname": "acct-detail", "platform": "douyin"}).json()
     conversation = client.post("/api/conversations", json={"lead_id": lead["id"], "account_name": "acct-detail"}).json()
     task = client.post("/api/tasks", json={"task_type": "demo", "payload": {}}).json()
 

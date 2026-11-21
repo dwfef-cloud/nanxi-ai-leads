@@ -9,28 +9,30 @@
 ## 项目结构
 
 ```
-nanxi-ai-leads/
-├── backend/          # FastAPI 后端（126 个 API）
+nanxi-ai-leads/          ← 自包含：整目录拷到任何机器/盘符可直接运行
+├── backend/          # FastAPI 后端 + IPC 桥接（端口 8899）
+│   ├── bridge_server.py  # 启动入口
 │   ├── app/
-│   │   ├── api/          # 路由层（21 个路由模块）
-│   │   ├── core/         # 依赖注入、配置
-│   │   ├── db/           # SQLite schema + 初始化
-│   │   ├── integrations/ # MediaCrawler / 私信发送器对接
-│   │   ├── models/       # 领域模型（15 实体）
-│   │   ├── repositories/ # 数据访问层（SQLite / Memory）
-│   │   ├── schemas/      # Pydantic 请求/响应模型
-│   │   └── services/     # 业务逻辑层
-│   ├── docs/             # API 契约文档
-│   ├── tests/            # 测试
-│   └── pyproject.toml
-├── frontend/         # 纯 HTML/JS 前端（21 个页面）
-│   ├── assets/js/        # app.js + 各域 API 对接模块
-│   └── index.html
-└── desktop/          # Electron 桌面端（CDP 执行器）
-    ├── src/
-    ├── main.cjs
-    └── package.json
+│   │   ├── paths.py      # 可搬路径（数据/导出/备份，环境变量可覆盖）
+│   │   ├── api/          # 路由层 + /ipc/{channel} 桥接
+│   │   ├── execution/    # 执行层（采集/筛选/编排/触达账本/合规）
+│   │   ├── engagement/   # 互动层（驱动/配额/频控/账号池/私信）
+│   │   └── nurture/      # 养号
+│   ├── docs/             # DEPLOY / PARAMETERS / EMERGENCY / RELEASE
+│   ├── tests/            # 427 项回归
+│   └── tools/            # 体检 / 契约验收 / 压测 / 演练 / 状态归一
+├── data/             # ★ 数据目录（与 backend 平级，独立于代码）
+│                     #   5 个 sqlite 库 + douyin 登录态 + exports/ + backups/
+│                     #   升级/替换 backend 代码不影响此目录；交付安装时由壳注入
+│                     #   DATA_DIR 指向 %APPDATA%，避免装到 Program Files 无写权限
+├── ui/               # 前端界面（桌面壳加载 /ui，后端静态挂载）
+├── desktop/          # Electron 桌面壳（唯一一份，含运行时）
+├── frontend/         # LEGACY：辅助验证面（/manage，可关可删）
+└── docs/             # 交付文档
 ```
+
+> 启动：`backend` 下 `python -m uvicorn bridge_server:app --port 8899`，浏览器开 `http://127.0.0.1:8899/ui/`；
+> 或直接 `desktop` 下 `npm start`（壳会自动拉起后端）。详见 `backend/docs/DEPLOY.md`。
 
 ## 功能模块
 
@@ -82,6 +84,8 @@ cd frontend
 python -m http.server 8080
 # 打开 http://127.0.0.1:8080
 ```
+
+前端仅展示工作台、线索池、互动中心、客户与商机。互动中心内整合评论回复和私信收件箱，完整设置从右上角“配置”进入。访问后端根地址 `http://127.0.0.1:8000` 会自动跳转到精华版前端；其他业务能力继续保留为后端 API。
 
 ### 桌面端
 

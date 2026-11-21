@@ -4,12 +4,13 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 
 from app.api.router import api_router
 from app.core.api_stats import register_api_stats
 from app.core.mediacrawler_runtime import start_media_crawler
 from app.core.dependencies import get_backup_service
+from app.paths import EXPORT_DIR, ensure
 
 ROOT = Path(__file__).resolve().parent
 
@@ -41,19 +42,15 @@ def create_app() -> FastAPI:
     # P4-C：API 统计中间件（内存计数，供 /api/monitor/api-stats 读取）
     register_api_stats(app)
     app.include_router(api_router)
-    app.mount("/assets", StaticFiles(directory=ROOT / "webui" / "assets"), name="webui-assets")
-    # 导出文件静态目录（D 盘）
-    _exports_dir = Path(r"D:\.exports")
-    _exports_dir.mkdir(parents=True, exist_ok=True)
-    app.mount("/exports", StaticFiles(directory=str(_exports_dir)), name="exports")
+    # 导出文件静态目录（随包在 <软件根>/data/exports，可用 EXPORT_DIR 覆盖）
+    app.mount("/exports", StaticFiles(directory=str(ensure(EXPORT_DIR))), name="exports")
 
     @app.get("/")
-    def home() -> FileResponse:
-        return FileResponse(ROOT / "webui" / "index.html")
-
-    @app.get("/report.js")
-    def report_script() -> FileResponse:
-        return FileResponse(ROOT / "webui" / "report.js", media_type="application/javascript")
+    def home() -> RedirectResponse:
+        return RedirectResponse(
+            url="http://127.0.0.1:8080/?v=4modules-20261107#/workbench",
+            status_code=307,
+        )
 
     return app
 

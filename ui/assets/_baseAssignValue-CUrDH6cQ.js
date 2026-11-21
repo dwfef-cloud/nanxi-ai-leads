@@ -1,0 +1,1 @@
+import{a9 as o,gu as i,gv as s}from"./index-1pPBwPwk.js";var b="[object Symbol]";function u(e){return typeof e=="symbol"||o(e)&&i(e)==b}var a=function(){try{var e=s(Object,"defineProperty");return e({},"",{}),e}catch{}}();function f(e,r,t){r=="__proto__"&&a?a(e,r,{configurable:!0,enumerable:!0,value:t,writable:!0}):e[r]=t}export{f as b,a as d,u as i};

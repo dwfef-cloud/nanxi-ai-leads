@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'self'">
+<title>任务实况</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#111;color:#ddd;font:13px system-ui;overflow:hidden}
+body{display:flex;flex-direction:column}header{padding:7px 10px;display:flex;justify-content:space-between;background:#202020}
+main{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+canvas{width:100%;height:100%;object-fit:contain;display:none}#waiting{position:absolute}time{color:#aaa}
+</style>
+<header><span id="status">等待执行窗口画面</span><time id="at"></time></header>
+<main><span id="waiting">正在连接任务实际执行的窗口…</span><canvas id="frame" role="img" aria-label="任务执行窗口的实时画面"></canvas></main>
+<script src="live-worker-preview.js"></script>
+</html>

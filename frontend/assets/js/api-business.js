@@ -14,7 +14,7 @@
   'use strict';
 
   /* ── API 基址配置 ── */
-  const API_BASE = 'http://127.0.0.1:8000/api';
+  const API_BASE = ((typeof location !== 'undefined' && /^https?:$/.test(location.protocol)) ? location.origin : 'http://127.0.0.1:8899') + '/api';
   const FETCH_TIMEOUT = 10000; // 10 秒超时
 
   /* ── 全局加载指示器（顶部进度条，与 mock-data.js 行为一致） ── */

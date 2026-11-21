@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://127.0.0.1:8000/api';
+  const API_BASE = ((typeof location !== 'undefined' && /^https?:$/.test(location.protocol)) ? location.origin : 'http://127.0.0.1:8899') + '/api';
   const FETCH_TIMEOUT = 10000;
 
   /* ── 全局加载指示器（与 api-dashboard.js 一致） ── */

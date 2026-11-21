@@ -1,20 +1,21 @@
 {
-  "name": "nanxi-lead-desktop",
-  "version": "0.1.0",
+  "name": "nanxi-desktop-shell",
+  "version": "1.0.0",
   "private": true,
-  "description": "南溪 AI 获客桌面工作区",
+  "description": "南溪AI获客 桌面壳：Electron BrowserView 嵌抖音创作页/消息页，界面与数据来自本机桥接服务 (127.0.0.1:8899)",
   "author": "Nanxi AI",
   "license": "MIT",
-  "main": "main.cjs",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron .",
+    "offline": "electron offline-test.js",
+    "capture": "electron . --capture",
     "build:win": "electron-builder --win --x64",
     "build:win:portable": "electron-builder --win portable --x64",
     "dist": "electron-builder --win --x64"
   },
   "devDependencies": {
-    "electron": "^36.0.0",
+    "electron": "^33.2.0",
     "electron-builder": "^25.1.8"
   },
   "build": {
@@ -23,27 +24,47 @@
     "copyright": "Copyright © 2026 Nanxi AI",
     "directories": {
       "output": "dist",
-      "buildResources": "build"
+      "buildResources": "assets"
     },
     "files": [
-      "main.cjs",
-      "preload.cjs",
-      "src/**/*",
+      "main.js",
+      "preload.js",
+      "external-url.js",
+      "douyin_agent.js",
+      "command-control.js",
+      "live-preview.js",
+      "worker-surface.js",
+      "video-focus.js",
+      "live-dashboard.js",
+      "write-commands.js",
+      "action-executor.js",
+      "interaction-dom.js",
+      "live-platform.js",
+      "comment-like.js",
+      "comment-like-launcher.js",
+      "leadgen-launcher.js",
+      "leadgen-read.js",
+      "leadgen-review.js",
+      "live-dm.js",
+      "leadgen-extensions.js",
+      "live-social.js",
+      "live-media.js",
+      "live-comment-extras.js",
+      "profile-qr.js",
+      "offline-test.js",
+      "_verify/offline_action_driver.js",
+      "_verify/offline_dom_fixture.js",
+      "session-partition.js",
       "assets/**/*",
       "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "../frontend",
-        "to": "frontend",
-        "filter": ["**/*", "!**/node_modules/**"]
-      }
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "assets/icon.png",

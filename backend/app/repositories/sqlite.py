@@ -177,13 +177,17 @@ class SqliteRepository(Repository):
         rows = self._query(sql, tuple(params))
         leads = [self._row_to_lead(r) for r in rows]
         # keyword 过滤在 Python 层做（tags 是 JSON，SQL LIKE 不可靠）
+        # 命中字段：昵称 / 评论 / 备注 / 入口关键词 / 视频标题 / 需求（与线索库搜索框语义对齐）
         if keyword:
             needle = keyword.lower()
             leads = [
                 l for l in leads
-                if needle in l.nickname.lower()
-                or needle in l.comment.lower()
+                if needle in (l.nickname or "").lower()
+                or needle in (l.comment or "").lower()
                 or needle in (l.note or "").lower()
+                or needle in (getattr(l, "source_keyword", "") or "").lower()
+                or needle in (getattr(l, "video", "") or "").lower()
+                or needle in (getattr(l, "customer_need", "") or "").lower()
                 or any(needle in t.lower() for t in l.tags)
             ]
         return leads

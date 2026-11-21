@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.core.demo_guard import require_demo_seed
 from app.core.dependencies import get_task_service
 from app.integrations.mediacrawler_client import MediaCrawlerUnavailable
 from datetime import datetime, timezone
@@ -11,8 +12,10 @@ from app.services.task_service import TaskService
 router = APIRouter(prefix="/crawler", tags=["crawler"])
 
 
-@router.post("/import-demo", response_model=TaskRead)
+@router.post("/import-demo", response_model=TaskRead,
+             dependencies=[Depends(require_demo_seed)])
 def create_import_demo_task(service: TaskService = Depends(get_task_service)) -> TaskRead:
+    """导入硬编码的 demo 线索：默认关闭，仅内部演示用（见 app/core/demo_guard.py）。"""
     return service.create_task_from_data(
         "media_crawler_import",
         {

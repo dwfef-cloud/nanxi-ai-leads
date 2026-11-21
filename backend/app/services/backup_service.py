@@ -3,9 +3,9 @@ BackupService · 数据备份与恢复服务
 ====================================
 SQLite 数据库文件级备份、恢复、自动备份调度与全量 JSON 导出。
 
-存储约定：
-  - 备份目录：D:\\.backups\\（文件名 backup_{type}_{YYYYMMDD_HHMMSS}.db）
-  - 导出目录：D:\\.exports\\（全量 JSON）
+存储约定（全部相对 backend 根，整包可搬）：
+  - 备份目录：data/backups/（文件名 backup_{type}_{YYYYMMDD_HHMMSS}.db）
+  - 导出目录：data/exports/（全量 JSON）
   - 自动备份配置：system_settings 表，category="backup"
   - 恢复前自动创建 _pre_restore_{timestamp}.db 临时备份，失败可回滚
 """
@@ -19,6 +19,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+from app.paths import BACKUP_DIR, DB_PATH, EXPORT_DIR
 
 from app.repositories.base import Repository
 
@@ -63,14 +65,15 @@ class BackupService:
     def __init__(
         self,
         repo: Repository,
-        db_path: str = r"D:\.data\lead_system.db",
-        backup_dir: str = r"D:\.backups",
-        export_dir: str = r"D:\.exports",
+        db_path: str | None = None,
+        backup_dir: str | None = None,
+        export_dir: str | None = None,
     ) -> None:
         self._repo = repo
-        self._db_path = Path(db_path)
-        self._backup_dir = Path(backup_dir)
-        self._export_dir = Path(export_dir)
+        # 默认值随包解析（<软件根>/data/...），可用 DATA_DIR/EXPORT_DIR/BACKUP_DIR 覆盖
+        self._db_path = Path(db_path or DB_PATH)
+        self._backup_dir = Path(backup_dir or BACKUP_DIR)
+        self._export_dir = Path(export_dir or EXPORT_DIR)
         self._backup_dir.mkdir(parents=True, exist_ok=True)
         self._export_dir.mkdir(parents=True, exist_ok=True)
 

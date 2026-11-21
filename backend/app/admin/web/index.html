@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<link rel="icon" type="image/svg+xml" href="/admin/favicon.svg" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>授权与运营后台 · 阿里山AI获客</title>
+<link rel="stylesheet" href="./admin.css" />
+</head>
+<body>
+
+<!-- ============ 登录 ============ -->
+<section id="loginView" class="login-wrap">
+  <div class="login-card">
+    <div class="brand brand-lg">
+      <span class="brand-mark">A</span>
+      <div>
+        <h1>授权与运营后台</h1>
+        <p class="muted">密钥签发 · 多用户使用监控</p>
+      </div>
+    </div>
+    <label class="field">
+      <span>后台口令</span>
+      <input id="password" type="password" autocomplete="current-password"
+             placeholder="请输入后台口令" />
+    </label>
+    <p id="loginError" class="error" hidden></p>
+    <button id="loginBtn" class="btn btn-primary btn-block" type="button">登录</button>
+    <p class="hint">
+      首次使用：口令在 <code>backend/data/admin_initial_password.txt</code>，
+      登录后请立即修改并删除该文件。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 主界面 ============ -->
+<div id="appView" class="app" hidden>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">A</span>
+      <div>
+        <strong>运营后台</strong>
+        <small class="muted">授权 · 监控</small>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="nav-item active" data-view="overview"><i class="ic">◧</i>概览</button>
+      <button class="nav-item" data-view="licenses"><i class="ic">⚿</i>密钥管理</button>
+      <button class="nav-item" data-view="instances"><i class="ic">▤</i>用户监控</button>
+      <button class="nav-item" data-view="usage"><i class="ic">◔</i>用量分析</button>
+      <button class="nav-item" data-view="audit"><i class="ic">☰</i>操作日志</button>
+      <button class="nav-item" data-view="guide"><i class="ic">?</i>接入说明</button>
+      <button class="nav-item" data-view="settings"><i class="ic">⚙</i>设置</button>
+    </nav>
+    <div class="sidebar-foot">
+      <button id="themeBtn" class="ghost-btn" type="button">切换亮/暗色</button>
+      <button id="logoutBtn" class="ghost-btn" type="button">退出登录</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">概览</h2>
+        <p id="pageSub" class="muted">密钥签发与多用户使用情况</p>
+      </div>
+      <div class="topbar-right">
+        <span id="clock" class="muted"></span>
+        <button id="refreshBtn" class="btn btn-ghost" type="button">刷新</button>
+      </div>
+    </header>
+
+    <!-- 概览 -->
+    <section class="view" id="view-overview">
+      <div class="kpis" id="kpis"></div>
+      <div class="card">
+        <div class="card-head">
+          <h3>近 14 天使用趋势</h3>
+          <div class="legend">
+            <span><i class="dot dot-blue"></i>采集线索</span>
+            <span><i class="dot dot-green"></i>评论</span>
+            <span><i class="dot dot-purple"></i>私信</span>
+          </div>
+        </div>
+        <div class="chart" id="trendChart"></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>用量 Top 客户</h3></div>
+          <div id="topLicenses" class="table-wrap"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>最近操作</h3></div>
+          <div id="recentAudit" class="timeline"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 密钥管理 -->
+    <section class="view" id="view-licenses" hidden>
+      <div class="card">
+        <div class="toolbar">
+          <input id="licSearch" class="input" placeholder="搜索密钥 / 客户 / 备注" />
+          <select id="licStatus" class="input">
+            <option value="">全部状态</option>
+            <option value="unused">未激活</option>
+            <option value="active">已激活</option>
+            <option value="suspended">已暂停</option>
+            <option value="revoked">已吊销</option>
+            <option value="expired">已过期</option>
+          </select>
+          <select id="licPlan" class="input">
+            <option value="">全部套餐</option>
+            <option value="basic">基础版</option>
+            <option value="standard">标准版</option>
+            <option value="pro">专业版</option>
+            <option value="ultimate">旗舰版</option>
+          </select>
+          <button id="licQueryBtn" class="btn btn-ghost" type="button">查询</button>
+          <div class="spacer"></div>
+          <button id="licExportBtn" class="btn btn-ghost" type="button">导出 CSV</button>
+          <button id="licNewBtn" class="btn btn-primary" type="button">生成密钥</button>
+        </div>
+        <div id="licTable" class="table-wrap"></div>
+        <div class="pager">
+          <span id="licTotal" class="muted"></span>
+          <div class="pager-btns">
+            <button id="licPrev" class="btn btn-ghost" type="button">上一页</button>
+            <span id="licPage" class="muted"></span>
+            <button id="licNext" class="btn btn-ghost" type="button">下一页</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 用户监控 -->
+    <section class="view" id="view-instances" hidden>
+      <div class="kpis" id="instKpis"></div>
+      <div class="card">
+        <div class="toolbar">
+          <input id="instSearch" class="input" placeholder="搜索机器码 / 主机名 / 客户" />
+          <button id="instQueryBtn" class="btn btn-ghost" type="button">查询</button>
+        </div>
+        <div id="instTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- 用量分析 -->
+    <section class="view" id="view-usage" hidden>
+      <div class="card">
+        <div class="card-head">
+          <h3>使用量趋势</h3>
+          <div class="legend">
+            <span><i class="dot dot-blue"></i>采集线索</span>
+            <span><i class="dot dot-green"></i>评论</span>
+            <span><i class="dot dot-purple"></i>私信</span>
+            <span><i class="dot dot-amber"></i>登录</span>
+          </div>
+        </div>
+        <div class="chart chart-lg" id="usageChart"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>按密钥汇总</h3></div>
+        <div id="usageTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- 操作日志 -->
+    <section class="view" id="view-audit" hidden>
+      <div class="card">
+        <div class="toolbar">
+          <input id="auditSearch" class="input" placeholder="搜索动作 / 对象 / 明细" />
+          <button id="auditQueryBtn" class="btn btn-ghost" type="button">查询</button>
+        </div>
+        <div id="auditTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- 接入说明 -->
+    <section class="view" id="view-guide" hidden>
+      <div class="card">
+        <div class="card-head"><h3>客户机如何接入</h3></div>
+        <p class="muted">
+          客户机上运行的获客系统只需在设置里填两项：<b>后台地址</b> 与 <b>密钥</b>。
+          启动时调「激活」，之后每 5 分钟调一次「心跳」上报用量。
+          被吊销或过期时心跳返回 <code>stop=true</code>，客户端应停止采集与发送。
+        </p>
+        <div class="code-block">
+          <div class="code-title">1. 首次激活（绑定机器）</div>
+<pre>POST <span id="guideBase">/admin/api</span>/activate
+Content-Type: application/json
+
+{
+  "licenseCode": "ALS-P2K8-7QMX3RTB-9D4F",
+  "machineId": "客户机唯一标识（建议取主板+MAC 的哈希）",
+  "hostname": "DESKTOP-01",
+  "appVersion": "1.0.0"
+}
+→ { "ok": true, "status": "active", "plan": "pro",
+    "expiresAt": "2027-11-13T00:00:00+00:00",
+    "dailyQuota": 500 }</pre>
+        </div>
+        <div class="code-block">
+          <div class="code-title">2. 周期心跳（续活 + 上报用量）</div>
+<pre>POST <span id="guideBase2">/admin/api</span>/heartbeat
+Content-Type: application/json
+
+{
+  "licenseCode": "ALS-P2K8-7QMX3RTB-9D4F",
+  "machineId": "同上",
+  "hostname": "DESKTOP-01",
+  "appVersion": "1.0.0",
+  "usage": { "day": "2026-11-13",
+             "leads": 12, "comments": 8, "dms": 3,
+             "logins": 1, "actions": 23 }
+}
+→ { "ok": true, "stop": false, "usedToday": 23, "overQuota": false }</pre>
+        </div>
+        <div class="code-block">
+          <div class="code-title">3. 离线校验（不联网也能判断真伪与到期）</div>
+<pre>GET <span id="guideBase3">/admin/api</span>/verify?code=ALS-P2K8-7QMX3RTB-9D4F
+
+密钥内含套餐与到期日，并用 HMAC 签名防伪造；
+离线可用，联网只用于吊销与用量上报。</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="view" id="view-settings" hidden>
+      <div class="card narrow">
+        <div class="card-head"><h3>修改后台口令</h3></div>
+        <label class="field"><span>当前口令</span><input id="pwOld" type="password" /></label>
+        <label class="field"><span>新口令（≥8 位）</span><input id="pwNew" type="password" /></label>
+        <label class="field"><span>确认新口令</span><input id="pwNew2" type="password" /></label>
+        <p id="pwMsg" class="hint" hidden></p>
+        <button id="pwBtn" class="btn btn-primary" type="button">保存</button>
+      </div>
+      <div class="card narrow">
+        <div class="card-head"><h3>运行信息</h3></div>
+        <dl class="kv">
+          <dt>后台入口</dt><dd id="infoUrl"></dd>
+          <dt>数据位置</dt><dd>backend/data/admin_console.db</dd>
+          <dt>签名密钥</dt><dd>backend/data/admin_secret.key（0600，勿外发）</dd>
+          <dt>会话有效期</dt><dd>12 小时（服务重启即失效）</dd>
+          <dt>交付给客户时</dt><dd>设 <code>ADMIN_ENABLED=0</code> 关闭本后台</dd>
+        </dl>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ 生成密钥弹窗 ============ -->
+<div id="modalMask" class="modal-mask" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modalTitle">生成密钥</h3>
+      <button id="modalClose" class="icon-btn" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="./admin.js"></script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="获客系统 v1.0 前端 — 抖音获客 → 私信 → 企微 → 成交，全生命周期业务工作台">
-<title>获客系统 · 业务工作台 v1.0</title>
+<meta name="description" content="获客系统精华版 — 线索、互动、私信与客户转化工作台">
+<title>获客系统 · 精华版</title>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -85,57 +85,31 @@
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1.5" width="3.4" height="11" rx="1" fill="currentColor"/><rect x="8.6" y="1.5" width="3.4" height="11" rx="1" fill="currentColor"/></svg>
         一键暂停
       </button>
-      <button type="button" class="btn btn--primary btn--sm" id="btn-settings" aria-haspopup="dialog">
+      <button type="button" class="btn btn--primary btn--sm" id="btn-settings">
         <span class="ico ico--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></span>配置
       </button>
     </div>
   </header>
 
-  <!-- ══════════ 左导航（业务分组） ══════════ -->
+  <!-- ══════════ 左导航（4 个核心模块） ══════════ -->
   <nav class="sidenav" aria-label="主导航">
 
     <ul class="sidenav__list">
       <li><a href="#/workbench" data-nav="workbench" aria-current="page">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-home"/></svg></span>工作台
       </a></li>
-    </ul>
-
-    <div class="nav-group">获客</div>
-    <ul class="sidenav__list">
       <li><a href="#/leads" data-nav="leads">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-leads"/></svg></span>线索池<span class="nav-badge nav-badge--count" id="nav-leads-badge">20</span>
       </a></li>
-      <li><a href="#/dm" data-nav="dm">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-dm"/></svg></span>私信任务<span class="nav-badge" id="nav-dm-badge" hidden>!</span>
+      <li><a href="#/interactions" data-nav="interactions">
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-dm"/></svg></span>互动中心
       </a></li>
-      <li><a href="#/dm-inbox" data-nav="dm-inbox">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-bell"/></svg></span>私信收件箱
-      </a></li>
-      <li><a href="#/comments" data-nav="comments">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-dm"/></svg></span>评论回复
-      </a></li>
-      <li><a href="#/scripts" data-nav="scripts">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-script"/></svg></span>话术库
-      </a></li>
-      <li><a href="#/accounts" data-nav="accounts">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-phone"/></svg></span>抖音账号<span class="nav-badge nav-badge--count" id="nav-acc-badge" hidden>!</span>
-      </a></li>
-      <li><a href="#/crawl" data-nav="crawl">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-rocket"/></svg></span>采集配置
-      </a></li>
-    </ul>
-
-    <div class="nav-group">客户管理</div>
-    <ul class="sidenav__list">
       <li><a href="#/customers" data-nav="customers">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-people"/></svg></span>客户与商机<span class="nav-badge nav-badge--count" id="nav-cust-badge">9</span>
       </a></li>
-      <li><a href="#/followups" data-nav="followups">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-calendar"/></svg></span>今日跟进<span class="nav-badge nav-badge--count" id="nav-fu-badge">7</span>
-      </a></li>
     </ul>
 
-    <div class="nav-group">经营分析</div>
+    <p class="sidenav__group">经营分析</p>
     <ul class="sidenav__list">
       <li><a href="#/funnel" data-nav="funnel">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-funnel"/></svg></span>转化漏斗
@@ -143,43 +117,13 @@
       <li><a href="#/reports" data-nav="reports">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-trend"/></svg></span>数据报表
       </a></li>
-      <li><a href="#/attribution" data-nav="attribution">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-compass"/></svg></span>触点归因
-      </a></li>
-      <li><a href="#/health" data-nav="health">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-health"/></svg></span>账号健康度
-      </a></li>
       <li><a href="#/risk" data-nav="risk">
         <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-shield"/></svg></span>合规风险
       </a></li>
-      <li><a href="#/monitor" data-nav="monitor">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-health"></use></svg></span>系统监控
-      </a></li>
-    </ul>
-
-    <div class="nav-group">通知</div>
-    <ul class="sidenav__list">
-      <li><a href="#/notifications" data-nav="notifications">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-bell"/></svg></span>通知中心<span class="nav-badge nav-badge--count" id="nav-notif-badge" hidden>0</span>
-      </a></li>
-    </ul>
-
-    <div class="nav-group">设置</div>
-    <ul class="sidenav__list">
-      <li><a href="#/wizard" data-nav="wizard">
-        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-rocket"/></svg></span>上手向导
-      </a></li>
-        <li><a href="#/settings" data-nav="settings"><span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-gear"/></svg></span>系统设置</a></li>
-      <li><a href="#/backup" data-nav="backup"><span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-clock"/></svg></span>数据备份</a></li>
     </ul>
 
     <div class="sidenav__footer">
-      <div class="north-star" title="北极星指标：合规前提下的加企微/私域承接数">
-        <span class="north-star__label">北极星 · 加企微</span>
-        <span class="north-star__value" id="north-star-value">41</span>
-        <span class="north-star__delta" id="north-star-delta">▲ 6 本周</span>
-      </div>
-      <p class="sidenav__version">v1.0-S3 · 内测版<br>自托管 · 数据不出域</p>
+      <p class="sidenav__version">4 模块精华版 · 本地部署<br>数据不出域</p>
     </div>
   </nav>
 

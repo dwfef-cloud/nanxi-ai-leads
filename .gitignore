@@ -15,7 +15,15 @@ venv/
 env/
 
 # IDE / Editor
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/leadgen-live-debugging/
+.agents/skills/leadgen-live-debugging/*
+!.agents/skills/leadgen-live-debugging/SKILL.md
+!.agents/skills/leadgen-live-debugging/agents/
+.agents/skills/leadgen-live-debugging/agents/*
+!.agents/skills/leadgen-live-debugging/agents/openai.yaml
 .claude/
 .codex/
 .playwright-cli/
@@ -56,4 +64,31 @@ desktop.ini
 *.tmp
 *.temp
 *.bak
+*.bak-*
 *.old
+
+# Local investigation artifacts and live-account data
+/_extract/
+/_test-artifacts/
+/backend/probe_*.json
+/backend/preview_rec*.json
+/backend/swt*.json
+/backend/unused.db
+/backend/logs/
+/backend/tools/_tmp_acc*/
+/backend/tools/probe_report.json
+/backend/tools/acceptance_result.json
+/backend/{}
+/desktop/.npmrc
+/desktop/_probe_ui.js
+/desktop/_verify/**
+!/desktop/_verify/
+!/desktop/_verify/test_*.js
+!/desktop/_verify/offline_action_driver.js
+!/desktop/_verify/offline_dom_fixture.js
+/desktop/_verify/**/*.png
+/desktop/_verify/**/*.json
+/desktop/_verify/**/isolated-profile/
+/desktop/_verify/**/attempts/
+/desktop/_verify/**/cache/
+/ui/_verify/

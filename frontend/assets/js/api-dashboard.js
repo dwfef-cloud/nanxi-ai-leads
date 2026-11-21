@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://127.0.0.1:8000/api';
+  const API_BASE = ((typeof location !== 'undefined' && /^https?:$/.test(location.protocol)) ? location.origin : 'http://127.0.0.1:8899') + '/api';
   const FETCH_TIMEOUT = 10000; // 10 秒超时
 
   /* ── 全局加载指示器（顶部进度条，与 mock-data.js 行为一致） ── */
@@ -136,6 +136,24 @@
   }
 
   /**
+   * D26 执行侧漏斗（真实采集/筛选/互动/私信口径 + 今日快照 + 14天趋势）
+   * GET /api/dashboard/execution-funnel
+   */
+  async function fetchExecutionFunnel(days) {
+    const data = await apiFetch('/dashboard/execution-funnel' + (days ? '?days=' + days : ''));
+    return _normalize(data);
+  }
+
+  /**
+   * D26 执行侧合规护栏（配额账本 / DM 官方频控 / 账号池 / 编排器阻断 / 养号）
+   * GET /api/dashboard/execution-compliance
+   */
+  async function fetchExecutionCompliance(days) {
+    const data = await apiFetch('/dashboard/execution-compliance' + (days ? '?days=' + days : ''));
+    return _normalize(data);
+  }
+
+  /**
    * 触点归因数据（6触点归因 + 内容榜）
    * GET /api/dashboard/attribution
    */
@@ -243,6 +261,8 @@
     /* 分析域 */
     getWorkbench,
     getFunnel,
+    fetchExecutionFunnel,
+    fetchExecutionCompliance,
     getAttribution,
     getCompliance,
     /* 运行态 */

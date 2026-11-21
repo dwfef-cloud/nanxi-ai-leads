@@ -1,0 +1,20 @@
+{
+  "_comment": "选择器集中治理：抖音改版只改本文件，不改代码。JSON 是 YAML 1.2 子集，用标准库解析，不引入 PyYAML 依赖。",
+  "version": "1.0.0",
+  "comment_item": "#comment-item, [data-e2e='comment-item'], .comment-item",
+  "comment_text": "[data-e2e='comment-text'], .comment-text, span",
+  "comment_nickname": "[data-e2e='comment-user-nickname'], .comment-nickname, a",
+  "comment_time": "[data-e2e='comment-time'], .comment-time, time",
+  "comment_list_container": "[data-e2e='comment-list'], .comment-list",
+  "search_card": "[data-e2e='searchbar-item'], .search-result-card, li",
+  "search_title": "[data-e2e='searchbar-item-title'], .title, h3",
+  "search_author": "[data-e2e='searchbar-item-author'], .author",
+  "search_link": "a[href*='/video/']",
+  "live_card": "[data-e2e='live-card'], .live-card",
+  "fallback_required": [
+    "comment_item",
+    "comment_text",
+    "search_card",
+    "search_link"
+  ]
+}
